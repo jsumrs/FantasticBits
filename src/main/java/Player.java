@@ -37,12 +37,16 @@ class Player {
                 int vy = in.nextInt(); // velocity
                 int state = in.nextInt(); // 1 if the wizard is holding a Snaffle, 0 otherwise
 
-                if (entityType.equals("WIZARD"))
-                    myWizards.add(new Wizard(entityId, entityType, x, y, vx, vy, state));
-                else if (entityType.equals("OPPONENT_WIZARD"))
-                    enemyWizards.add(new Wizard(entityId, entityType, x, y, vx, vy, state));
-                else if (entityType.equals("SNAFFLE"))
+                if (entityType.equals("WIZARD")){
+                    myWizards.add(new Wizard(entityId, entityType, x, y, vx, vy, state, myTeamId));
+                    System.err.println("myWizard added");
+                } else if (entityType.equals("OPPONENT_WIZARD")){
+                    enemyWizards.add(new Wizard(entityId, entityType, x, y, vx, vy, state, myTeamId ^ 1));
+                    System.err.println("enemyWizard added");
+                } else if (entityType.equals("SNAFFLE")) {
                     snaffles.add(new Snaffle(entityId, entityType, x, y, vx, vy));
+                    System.err.println("Snaffle added");
+                }
 
             }
             for (int i = 0; i < 2; i++) {
@@ -129,7 +133,7 @@ class Entity {
         Snaffle best = null;
         for (Snaffle s : snaffles){
             // Make the first targetable snaffle, the current best.
-            if (s.getIsTargeted()) {
+            if (!s.getIsTargeted()) {
                 best = s;
                 break;
             }
@@ -156,11 +160,14 @@ class Entity {
 
 class Wizard extends Entity {
     private int state;
+    private int teamID; // (X=0, Y=3750) for team 0 and (X=16000, Y=3750) for team 1.
     private Entity currentTarget;
 
-    public Wizard(int entityId, String entityType, int x, int y, int vx, int vy, int state) {
+
+    public Wizard(int entityId, String entityType, int x, int y, int vx, int vy, int state, int teamID) {
         super(entityId, entityType, x, y, vx, vy);
         this.state = state;
+        this.teamID = teamID;
     }
 
     /**
@@ -173,11 +180,17 @@ class Wizard extends Entity {
     }
 
     public void action(ArrayList<Wizard> myWizards, ArrayList<Wizard> enemyWizards, ArrayList<Snaffle> snaffles){
-        Snaffle target = getNearestUntargetedSnaffle(snaffles);
-        if (target != null) {
-            int x = target.getX();
-            int y = target.getY();
-            System.out.println("MOVE " + x + " " + y + " " + 150);
+        if (state == 0) {
+            Snaffle target = getNearestUntargetedSnaffle(snaffles);
+            if (target != null) {
+                int x = target.getX();
+                int y = target.getY();
+                System.out.println("MOVE " + x + " " + y + " " + 150);
+            }
+        } else {
+            int x = teamID == 0 ? 16000 : 0;
+            int y = 3750;
+            System.out.println("THROW " + x + " " + y + " " + 500);
         }
     }
 }
