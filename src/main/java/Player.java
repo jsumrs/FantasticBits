@@ -108,6 +108,10 @@ class Entity {
         return y;
     }
 
+    public int getVx() { return vx; }
+
+    public int getVy() { return vy; }
+
     public boolean getIsTargeted() { return isTargeted; }
 
     public int getEntityId() { return entityId; }
@@ -212,8 +216,8 @@ class Wizard extends Entity {
                 }
                 if (target != null) {
                     setTarget(target);
-                    int x = target.getX();
-                    int y = target.getY();
+                    int x = target.getX() + target.getVx();
+                    int y = target.getY() + target.getVy();
                     System.err.println(this + "targets " + target);
                     System.out.println("MOVE " + x + " " + y + " " + 150);
                 } else {
@@ -224,9 +228,9 @@ class Wizard extends Entity {
             /* snaffle action logic */
             setTarget(null);
             int goalX = teamID == 0 ? 16000 : 0;
-            int goalY = 3750;
+            int goalY = 2500;
 
-            int[] bestShot = findBestShot(goalX, 2150, enemyWizards, snaffles, bludgers);
+            int[] bestShot = findBestShot(goalX, goalY, enemyWizards, snaffles, bludgers);
             makeShot(bestShot[0], bestShot[1]);
             /* Pseudocode for wizard logic if the wizard has a snaffle.
             if (hasClearShot)
