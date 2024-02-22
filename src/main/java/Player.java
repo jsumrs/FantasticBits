@@ -298,27 +298,31 @@ class Wizard extends Entity {
 
             {
                 Entity target;
-                boolean petrify = false;
                 if (currentTarget == null) {
-                    /* Only wizard 0 may defend */
-                    if (this.getEntityId() == 0 && haveSnafflesOnMySide(snaffles, teamID)) {
-                        target = getBestFriendlySnaffle(snaffles, teamID);
-                        if (this.magic >= 10 && (target.getFutureY() >= 1600 && target.getFutureY() <= 5500) &&
-                                (teamID == 0 && target.getFutureX() < 500) ||
-                                (teamID == 1 && target.getFutureX() >= 15500)) {
-                            petrify = true;
-                        }
-                    } else if (this.getEntityId() == 1 && haveSnafflesOnMySide(snaffles, enemyID)) {
-                        /* Pretend im on the enemy side to return the snaffle closest to enemy team's goal */
-                        target = getBestFriendlySnaffle(snaffles, enemyID);
-                    } else {
-                        target = getNearestUntargetedSnaffle(snaffles);
-                    }
+                    ///* Only wizard 0 may defend */
+                    //if (this.getEntityId() == 0 && haveSnafflesOnMySide(snaffles, teamID)) {
+                    //target = getBestFriendlySnaffle(snaffles, teamID);
+                    //if (this.magic >= 10 && (target.getFutureY() >= 1600 && target.getFutureY() <= 5500) &&
+                    //        (teamID == 0 && target.getFutureX() < 500) ||
+                    //        (teamID == 1 && target.getFutureX() >= 15500)) {
+                    //    petrify = true;
+                    //}
+                    //} else if (this.getEntityId() == 1 && haveSnafflesOnMySide(snaffles, enemyID)) {
+                    //    /* Pretend im on the enemy side to return the snaffle closest to enemy team's goal */
+                    //    target = getBestFriendlySnaffle(snaffles, enemyID);
+                    //} else {
+                    target = getNearestUntargetedSnaffle(snaffles);
                 } else {
                     target = currentTarget;
                 }
-                if (petrify)
-                    System.out.println("PETRIFICUS " + target.getEntityId());
+
+                /* Petrify any snaffles reaching our goal box */
+                Snaffle friendlySnaffle = getBestFriendlySnaffle(snaffles, teamID);
+                if (friendlySnaffle != null && this.magic >= 10 && ((friendlySnaffle.getFutureY() >= 1600 && friendlySnaffle.getFutureY() <= 5500) &&
+                        (teamID == 0 && friendlySnaffle.getFutureX() < 500) ||
+                        (teamID == 1 && friendlySnaffle.getFutureX() >= 15500))) {
+                    System.out.println("PETRIFICUS " + friendlySnaffle.getEntityId());
+                }
                 else if (target != null) {
                     /* If there is a snaffle between the wizard and the wizard's goal, cast ACCIO on it. */
                     int distanceBetweenWizardAndTarget = distanceBetweenTwoEntities(this, target);
@@ -370,7 +374,7 @@ class Wizard extends Entity {
                 int distanceThrowerAndEnemy = getDistanceBetweenTwoPoints(throwerX, throwerY, enemyX, enemyY);
                 int distanceThrowerAndGoal = getDistanceBetweenTwoPoints(throwerX, throwerY, goalX, goalY);
 
-                /* If the distance of the thrower to the enemy plus the enemy to the goal is equal to the distance of the thrower to the goal +- 10 units, then there is something in the way. */
+                /* If the distance of the thrower to the enemy plus the enemy to the goal is equal to the distance of the thrower to the goal +- the tolerance, then there is something in the way. */
                 if (distanceEnemyAndGoal + distanceThrowerAndEnemy - distanceThrowerAndGoal < tolerance)
                     return findBestShot(goalX, goalY + wizardRadius, enemyWizards, snaffles, bludgers);
             }
