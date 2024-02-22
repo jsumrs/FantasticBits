@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="6c40457e-8558-429d-84de-ac533ffc36fb" name="Changes" comment="add defender and offence;">
+      <change beforePath="$PROJECT_DIR$/src/main/java/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Player.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+        <option value="xml" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1
+}</component>
+  <component name="ProjectId" id="2cA7EUfFBn50T58D6wH5nd0bBk1" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/SyncthingServiceAcct/kitchensync/school/semester_two/cosc121 - computer programming II/eclipse-workspace/FantasticBits",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "settings.editor.selected.configurable": "preferences.pluginManager"
+  }
+}]]></component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="jdk-19.0.2-corretto-19.0.2-4caba194b151-48ba4555" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="6c40457e-8558-429d-84de-ac533ffc36fb" name="Changes" comment="" />
+      <created>1707542418684</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1707542418684</updated>
+    </task>
+    <task id="LOCAL-00001" summary="create classes for all entities; add simple action() method to wizards;">
+      <option name="closed" value="true" />
+      <created>1708038355263</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1708038355263</updated>
+    </task>
+    <task id="LOCAL-00002" summary="wood league 1 rank-up;">
+      <option name="closed" value="true" />
+      <created>1708159458005</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1708159458005</updated>
+    </task>
+    <task id="LOCAL-00003" summary=" - add turn's ms elapsed timestamp for debugging&#10; - add bludger tracking&#10; - simplify entity targetting&#10; - add entity toString()&#10; - allow wizard to scan for best shot">
+      <option name="closed" value="true" />
+      <created>1708298657740</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1708298657740</updated>
+    </task>
+    <task id="LOCAL-00004" summary="update .gitignore with intellij template">
+      <option name="closed" value="true" />
+      <created>1708299870749</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1708299870749</updated>
+    </task>
+    <task id="LOCAL-00005" summary="add Wizard diagram file">
+      <option name="closed" value="true" />
+      <created>1708300930204</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1708300930204</updated>
+    </task>
+    <task id="LOCAL-00006" summary="move wizard toward snaffle future position;">
+      <option name="closed" value="true" />
+      <created>1708558700050</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1708558700050</updated>
+    </task>
+    <task id="LOCAL-00007" summary="add entity future position, and change logic for such change;">
+      <option name="closed" value="true" />
+      <created>1708569363355</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1708569363355</updated>
+    </task>
+    <task id="LOCAL-00008" summary="add defender and offence;">
+      <option name="closed" value="true" />
+      <created>1708581936664</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1708581936664</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="create classes for all entities; add simple action() method to wizards;" />
+    <MESSAGE value="wood league 1 rank-up;" />
+    <MESSAGE value=" - add turn's ms elapsed timestamp for debugging&#10; - add bludger tracking&#10; - simplify entity targetting&#10; - add entity toString()&#10; - allow wizard to scan for best shot" />
+    <MESSAGE value="update .gitignore with intellij template" />
+    <MESSAGE value="add Wizard diagram file" />
+    <MESSAGE value="move wizard toward snaffle future position;" />
+    <MESSAGE value="add entity future position, and change logic for such change;" />
+    <MESSAGE value="add defender and offence;" />
+    <option name="LAST_COMMIT_MESSAGE" value="add defender and offence;" />
+  </component>
+</project>
