@@ -271,6 +271,7 @@ class Wizard extends Entity {
         this.teamID = teamID;
         this.enemyID = teamID ^ 1; // change 0 to 1 and 1 to 0
         this.magic = magic;
+
     }
 
     /**
@@ -290,61 +291,132 @@ class Wizard extends Entity {
         int goalY = 2500;
         /* find snaffle logic */
         if (state == 0) {
-            /* Cast flipendo if we have enough magic and there is a snaffle in the goal (with 600u of it) */
-            /*Snaffle goalSnaffle = getSnaffleClosestToGoal(snaffles, goalX);
-            if (this.magic >= 20 && goalSnaffle != null){
-                System.out.println("FLIPENDO " + goalSnaffle.getEntityId());
-            } else */
-
-            {
-                Entity target;
-                if (currentTarget == null) {
-                    ///* Only wizard 0 may defend */
-                    //if (this.getEntityId() == 0 && haveSnafflesOnMySide(snaffles, teamID)) {
-                    //target = getBestFriendlySnaffle(snaffles, teamID);
-                    //if (this.magic >= 10 && (target.getFutureY() >= 1600 && target.getFutureY() <= 5500) &&
-                    //        (teamID == 0 && target.getFutureX() < 500) ||
-                    //        (teamID == 1 && target.getFutureX() >= 15500)) {
-                    //    petrify = true;
-                    //}
-                    //} else if (this.getEntityId() == 1 && haveSnafflesOnMySide(snaffles, enemyID)) {
-                    //    /* Pretend im on the enemy side to return the snaffle closest to enemy team's goal */
-                    //    target = getBestFriendlySnaffle(snaffles, enemyID);
-                    //} else {
-                    target = getNearestUntargetedSnaffle(snaffles);
-                } else {
-                    target = currentTarget;
-                }
-
-                /* Petrify any snaffles reaching our goal box */
+            /* First Option: Flipendo any snaffles in a direct line to the goal */
+            Snaffle inline = getSnaffleInlineWithGoal(goalX, goalY, snaffles);
+            if (inline != null && magic >= 20)
+                System.out.println("FLIPENDO " + inline.getEntityId());
+            else {
+                /* Second Option: Petrify any snaffles reaching our goal box */
                 Snaffle friendlySnaffle = getBestFriendlySnaffle(snaffles, teamID);
-                if (friendlySnaffle != null && this.magic >= 10 && ((friendlySnaffle.getFutureY() >= 1600 && friendlySnaffle.getFutureY() <= 5500) &&
-                        (teamID == 0 && friendlySnaffle.getFutureX() < 500) ||
-                        (teamID == 1 && friendlySnaffle.getFutureX() >= 15500))) {
+                if (friendlySnaffle != null && this.magic >= 10 && ((friendlySnaffle.getFutureY() >= 1600 && friendlySnaffle.getFutureY() <= 5500 && friendlySnaffle.getVx() > 0 && friendlySnaffle.getVy() > 0) &&
+                        (teamID == 0 && friendlySnaffle.getFutureX() < 500) || (teamID == 1 && friendlySnaffle.getFutureX() >= 15500))) {
                     System.out.println("PETRIFICUS " + friendlySnaffle.getEntityId());
                 }
-                else if (target != null) {
-                    /* If there is a snaffle between the wizard and the wizard's goal, cast ACCIO on it. */
-                    int distanceBetweenWizardAndTarget = distanceBetweenTwoEntities(this, target);
-                    System.err.println("distanceBetweenWizardAndTarget: " + distanceBetweenWizardAndTarget);
-                    if (this.magic >= 15 && (distanceBetweenWizardAndTarget >= 1500 && distanceBetweenWizardAndTarget <= 6000) && ((teamID == 0 && target.getFutureX() < this.getFutureX()) || (teamID == 1 && target.getFutureX() > this.getFutureX()))) {
-                        this.magic -= 15;
-                        System.out.println("ACCIO " + target.getEntityId());
+                else {
+                    Entity target;
+                    if (currentTarget == null)
+                        target = getNearestUntargetedSnaffle(snaffles);
+                    else
+                        target = currentTarget;
+                    if (target != null) {
+                        /* Third Option: If there is a snaffle between the wizard and the wizard's goal, cast ACCIO on it. */
+                        int distanceBetweenWizardAndTarget = distanceBetweenTwoEntities(this, target);
+                        System.err.println("distanceBetweenWizardAndTarget: " + distanceBetweenWizardAndTarget);
+                        if (this.magic >= 15 && (distanceBetweenWizardAndTarget >= 1500 && distanceBetweenWizardAndTarget <= 6000) && ((teamID == 0 && target.getFutureX() < this.getFutureX()) || (teamID == 1 && target.getFutureX() > this.getFutureX()))) {
+                            this.magic -= 15;
+                            System.out.println("ACCIO " + target.getEntityId());
+                        } else {
+                            /* Fourth Option: Move to the nearest snaffle */
+                            setTarget(target);
+                            System.err.println(this + "targets " + target);
+                            System.out.println("MOVE " + target.getFutureX() + " " + target.getFutureY() + " " + 150);
+                        }
                     } else {
-                        setTarget(target);
-                        System.err.println(this + "targets " + target);
-                        System.out.println("MOVE " + target.getFutureX() + " " + target.getFutureY() + " " + 150);
+                        setTarget(null);
                     }
-                } else {
-                    setTarget(null);
                 }
             }
+            /* old unused code, i cleaned it all up and removed the defense part of my strategy, as it was more efficient to go all in on offence.
+//            /* Cast flipendo if we have enough magic and there is a snaffle in the goal (with 600u of it) */
+//            /*Snaffle goalSnaffle = getSnaffleClosestToGoal(snaffles, goalX);
+//            if (this.magic >= 20 && goalSnaffle != null){
+//                System.out.println("FLIPENDO " + goalSnaffle.getEntityId());
+//            } else */
+//
+//            {
+//                Entity target;
+//                if (currentTarget == null) {
+//                    ///* Only wizard 0 may defend */
+//                    //if (this.getEntityId() == 0 && haveSnafflesOnMySide(snaffles, teamID)) {
+//                    //target = getBestFriendlySnaffle(snaffles, teamID);
+//                    //if (this.magic >= 10 && (target.getFutureY() >= 1600 && target.getFutureY() <= 5500) &&
+//                    //        (teamID == 0 && target.getFutureX() < 500) ||
+//                    //        (teamID == 1 && target.getFutureX() >= 15500)) {
+//                    //    petrify = true;
+//                    //}
+//                    //} else if (this.getEntityId() == 1 && haveSnafflesOnMySide(snaffles, enemyID)) {
+//                    //    /* Pretend im on the enemy side to return the snaffle closest to enemy team's goal */
+//                    //    target = getBestFriendlySnaffle(snaffles, enemyID);
+//                    //} else {
+//                    target = getNearestUntargetedSnaffle(snaffles);
+//                } else {
+//                    target = currentTarget;
+//                }
+//
+//                /* Petrify any snaffles reaching our goal box */
+//                Snaffle friendlySnaffle = getBestFriendlySnaffle(snaffles, teamID);
+//                if (friendlySnaffle != null && this.magic >= 10 && ((friendlySnaffle.getFutureY() >= 1600 && friendlySnaffle.getFutureY() <= 5500) &&
+//                        (teamID == 0 && friendlySnaffle.getFutureX() < 500) ||
+//                        (teamID == 1 && friendlySnaffle.getFutureX() >= 15500))) {
+//                    System.out.println("PETRIFICUS " + friendlySnaffle.getEntityId());
+//                }
+//                else if (target != null) {
+//                    /* If there is a snaffle between the wizard and the wizard's goal, cast ACCIO on it. */
+//                    int distanceBetweenWizardAndTarget = distanceBetweenTwoEntities(this, target);
+//                    System.err.println("distanceBetweenWizardAndTarget: " + distanceBetweenWizardAndTarget);
+//                    if (this.magic >= 15 && (distanceBetweenWizardAndTarget >= 1500 && distanceBetweenWizardAndTarget <= 6000) && ((teamID == 0 && target.getFutureX() < this.getFutureX()) || (teamID == 1 && target.getFutureX() > this.getFutureX()))) {
+//                        this.magic -= 15;
+//                        System.out.println("ACCIO " + target.getEntityId());
+//                    } else {
+//                        setTarget(target);
+//                        System.err.println(this + "targets " + target);
+//                        System.out.println("MOVE " + target.getFutureX() + " " + target.getFutureY() + " " + 150);
+//                    }
+//                } else {
+//                    setTarget(null);
+//                }
+//            }
+
         } else {
             /* holding snaffle logic */
             setTarget(null);
             int[] bestShot = findBestShot(goalX, goalY, enemyWizards, snaffles, bludgers);
             makeShot(bestShot[0], bestShot[1]);
         }
+    }
+
+    /* Return the snaffle that is between the wizard and the goal */
+    public Snaffle getSnaffleInlineWithGoal(int goalX, int goalY, ArrayList<Snaffle> snaffles) {
+
+        int throwerX = this.getX();
+        int throwerY = this.getY();
+        int postOne = 2300;
+        int postTwo = 5000;
+        int tolerance = 10;
+        for (Snaffle enemy : snaffles) {
+            int enemyX = enemy.getFutureX();
+            int enemyY = enemy.getFutureY();
+            //int snaffleRadius = 75;
+            /* Only bother checking distances if it's possible that the enemy is between the thrower and the goal */
+//            if (((teamID == 0 && enemyX <= goalX && enemyX > throwerX) || (teamID == 1 && enemyX < throwerX && enemyX >= goalX)) && enemyY >= postOne && enemyY <= postTwo) {
+//                int distanceEnemyAndGoal = getDistanceBetweenTwoPoints(enemyX, enemyY, goalX, goalY);
+//                int distanceThrowerAndEnemy = getDistanceBetweenTwoPoints(throwerX, throwerY, enemyX, enemyY);
+//                int distanceThrowerAndGoal = getDistanceBetweenTwoPoints(throwerX, throwerY, goalX, goalY);
+//
+//                /* If the distance of the thrower to the enemy plus the enemy to the goal is equal to the distance of the thrower to the goal +- 10 units, then there is something in the way. */
+//                if (distanceEnemyAndGoal + distanceThrowerAndEnemy - distanceThrowerAndGoal < tolerance)
+//                    return enemy;
+//            }
+            int wizX = this.getFutureX();
+            int wizY = this.getFutureY();
+            for (int i = postOne; i < postTwo; i++) {
+                /* Check if any portion of the goal lies on the line drawn by the wizard and snaffle. */
+                if (Math.abs((i - wizY) - (((enemyY - wizY) / (enemyX - wizX)) * (goalX - wizX))) <= 0.01){
+                    return enemy;
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -361,8 +433,9 @@ class Wizard extends Entity {
         int throwerX = this.getX();
         int throwerY = this.getY();
         int tolerance = 10;
+
         if (goalY > 5500)
-            return new int[]{0, 0};
+            return new int[]{goalX, 0};
 
         for (Wizard enemy : enemyWizards) {
             int enemyX = enemy.getFutureX();
@@ -385,7 +458,7 @@ class Wizard extends Entity {
             int enemyY = enemy.getFutureY();
             int bludgerRadius = 100;
             /* Only bother checking distances if it's possible that the enemy is between the thrower and the goal */
-            if ((teamID == 0 && enemyX <= goalX && enemyX > throwerX || teamID == 1 && enemyX < throwerX && enemyX >= goalX)) {
+            if ((teamID == 0 && enemyX <= goalX && enemyX > throwerX) || (teamID == 1 && enemyX < throwerX && enemyX >= goalX)) {
                 int distanceEnemyAndGoal = getDistanceBetweenTwoPoints(enemyX, enemyY, goalX, goalY);
                 int distanceThrowerAndEnemy = getDistanceBetweenTwoPoints(throwerX, throwerY, enemyX, enemyY);
                 int distanceThrowerAndGoal = getDistanceBetweenTwoPoints(throwerX, throwerY, goalX, goalY);
@@ -401,7 +474,7 @@ class Wizard extends Entity {
             int enemyY = enemy.getFutureY();
             int snaffleRadius = 75;
             /* Only bother checking distances if it's possible that the enemy is between the thrower and the goal */
-            if ((teamID == 0 && enemyX <= goalX && enemyX > throwerX || teamID == 1 && enemyX < throwerX && enemyX >= goalX)) {
+            if ((teamID == 0 && enemyX <= goalX && enemyX > throwerX) || (teamID == 1 && enemyX < throwerX && enemyX >= goalX)) {
                 int distanceEnemyAndGoal = getDistanceBetweenTwoPoints(enemyX, enemyY, goalX, goalY);
                 int distanceThrowerAndEnemy = getDistanceBetweenTwoPoints(throwerX, throwerY, enemyX, enemyY);
                 int distanceThrowerAndGoal = getDistanceBetweenTwoPoints(throwerX, throwerY, goalX, goalY);
