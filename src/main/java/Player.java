@@ -392,10 +392,11 @@ class Wizard extends Entity {
         int throwerY = this.getY();
         int postOne = 2300;
         int postTwo = 5000;
-        int tolerance = 10;
+        double tolerance = 0.01;
         for (Snaffle enemy : snaffles) {
             int enemyX = enemy.getFutureX();
             int enemyY = enemy.getFutureY();
+
             //int snaffleRadius = 75;
             /* Only bother checking distances if it's possible that the enemy is between the thrower and the goal */
 //            if (((teamID == 0 && enemyX <= goalX && enemyX > throwerX) || (teamID == 1 && enemyX < throwerX && enemyX >= goalX)) && enemyY >= postOne && enemyY <= postTwo) {
@@ -409,12 +410,14 @@ class Wizard extends Entity {
 //            }
             int wizX = this.getFutureX();
             int wizY = this.getFutureY();
-            for (int i = postOne; i < postTwo; i++) {
-                /* Check if any portion of the goal lies on the line drawn by the wizard and snaffle. */
-                if (Math.abs((i - wizY) - (((enemyY - wizY) / (enemyX - wizX)) * (goalX - wizX))) <= 0.01){
-                    return enemy;
-                }
-            }
+            if (enemyY == wizY)
+                continue;
+
+            double slope = (double) (enemyY - wizY) / (enemyX - wizX);
+            double b = wizY - (slope * wizX);
+            double y = (slope * goalX) + b;
+            if (y >= postOne && y <= postTwo)
+                return enemy;
         }
         return null;
     }
