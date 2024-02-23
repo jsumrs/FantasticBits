@@ -98,8 +98,18 @@ class Entity {
         this.y = y;
         this.vx = vx;
         this.vy = vy;
-        this.futureX = x + vx;
-        this.futureY = y + vy;
+
+        /* implement friction */
+        double friction;
+        if (entityType.equals("WIZARD") || entityType.equals("SNAFFLE"))
+            friction = 0.75;
+        else if (entityType.equals("BLUDGER"))
+            friction = 0.9;
+        else
+            friction = 1;
+
+        this.futureX = x + (int)(vx * friction);
+        this.futureY = y + (int)(vy * friction);
     }
 
     public int getX() {
@@ -410,7 +420,7 @@ class Wizard extends Entity {
 //            }
             int wizX = this.getFutureX();
             int wizY = this.getFutureY();
-            if (enemyY == wizY)
+            if (enemyY == wizY && enemyX != wizX)
                 continue;
 
             double slope = (double) (enemyY - wizY) / (enemyX - wizX);
