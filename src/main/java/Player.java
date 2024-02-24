@@ -49,7 +49,7 @@ class Player {
                     //System.err.println("enemyWizard added");
                 } else if (entityType.equals("SNAFFLE")) {
                     snaffles.add(new Snaffle(entityId, entityType, x, y, vx, vy));
-                    //System.err.println("Snaffle added");
+                    System.err.println("Snaffle added: " + snaffles.get(snaffles.size() - 1));
                 } else if (entityType.equals("BLUDGER")) {
                     bludgers.add(new Bludger(entityId, entityType, x, y, vx, vy));
                     //System.err.println("Bludger added");
@@ -261,7 +261,7 @@ class Entity {
 
     @Override
     public String toString() {
-        return entityType + " " + entityId + " at: (" + x + "," + y + ")";
+        return this.getEntityId() + " " + this.getEntityId() + " at: (" + this.getX() + "," + this.getY() + ")" + "Velocity: " + "(" + this.getVx() + "," + this.getVy() + ")";
     }
 
 
@@ -283,6 +283,8 @@ class Wizard extends Entity {
         this.magic = magic;
 
     }
+
+    public int getTeamID() { return teamID; }
 
     /**
      * Target the passed in entity.
@@ -308,7 +310,9 @@ class Wizard extends Entity {
             else {
                 /* Second Option: Petrify any snaffles reaching our goal box */
                 Snaffle friendlySnaffle = getBestFriendlySnaffle(snaffles, teamID);
-                if (friendlySnaffle != null && this.magic >= 10 && ((friendlySnaffle.getFutureY() >= 1600 && friendlySnaffle.getFutureY() <= 5500 && friendlySnaffle.getVx() > 0 && friendlySnaffle.getVy() > 0) &&
+                int minHorMovespd = 25;
+                int minVertMovespd = 10;
+                if (friendlySnaffle != null && this.magic >= 10 && ((friendlySnaffle.getFutureY() >= 1600 && friendlySnaffle.getFutureY() <= 5500 && friendlySnaffle.getVx() > minHorMovespd && friendlySnaffle.getVy() > minVertMovespd) &&
                         (teamID == 0 && friendlySnaffle.getFutureX() < 500) || (teamID == 1 && friendlySnaffle.getFutureX() >= 15500))) {
                     System.out.println("PETRIFICUS " + friendlySnaffle.getEntityId());
                 }
@@ -397,7 +401,7 @@ class Wizard extends Entity {
 
     /* Return the snaffle that is between the wizard and the goal */
     public Snaffle getSnaffleInlineWithGoal(int goalX, int goalY, ArrayList<Snaffle> snaffles) {
-
+        int teamID = this.getTeamID();
         int throwerX = this.getX();
         int throwerY = this.getY();
         int postOne = 2300;
@@ -420,14 +424,17 @@ class Wizard extends Entity {
 //            }
             int wizX = this.getFutureX();
             int wizY = this.getFutureY();
-            if (enemyY == wizY && enemyX != wizX)
+            if (enemyX == wizX)
                 continue;
-
-            double slope = (double) (enemyY - wizY) / (enemyX - wizX);
-            double b = wizY - (slope * wizX);
-            double y = (slope * goalX) + b;
-            if (y >= postOne && y <= postTwo)
+            if (enemyY == wizY)
                 return enemy;
+            if (((teamID == 0 && enemyX <= goalX && enemyX > throwerX) || (teamID == 1 && enemyX < throwerX && enemyX >= goalX))) {
+                double slope = (double) (enemyY - wizY) / (enemyX - wizX);
+                double b = wizY - (slope * wizX);
+                double y = (slope * goalX) + b;
+                if (y >= postOne && y <= postTwo)
+                    return enemy;
+            }
         }
         return null;
     }
