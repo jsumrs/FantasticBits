@@ -1,16 +1,25 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.time.Instant;
-
 /**
- * Grab Snaffles and try to throw them through the opponent's goal!
- * Move towards a Snaffle and use your team id to determine where you need to throw it.
- * <p>
- * <p>
+ * League: Gold
+ * Username: jasoncodes
+ * This is the code for my Fantastic Bits bot. I apologize for the unorganized code, it is a mess. I did not have time
+ * to clean it up for submission, I plan on continuing work on it to try and achieve master rank.
+ *
+ * I made it to gold with the following strategy:
+ * Flipendo any snaffles in a straight line to the goal.
+ * Accio snaffles that are between my goal and my wizard.
+ * Petrify fast moving snaffles that are near my goal's line.
+ * If not holding snaffle, move to nearest one.
+ * If holding snaffle, throw toward goal.
+ *
+ * I plan on implementing flipendo bounce shots once I figure out the math behind that.
+ * I also want to rework my findBestShot() method.
+ * Maybe in the long run I'd like to build the physics engine to be able to simulate turns.
  * Standard input ->   [teamID, myScore, myMagic, opponentScore, opponentMagic, numOfEntities, entity1, [x, y, vx, vy, state] , entity2, [x, y, vx, vy, state], ..., entityN, [x, y, vx, vy, state]]
  **/
 class Player {
-
     public static void main(String args[]) {
         Scanner in = new Scanner(System.in);
         int myTeamId = in.nextInt(); // if 0 you need to score on the right of the map, if 1 you need to score on the left
@@ -80,6 +89,10 @@ class Player {
 }
 
 class Entity {
+    static final int GOALPOSTONEy = 2300;
+    static final int GOALPOSTTWOy = 5000;
+    static final int WIDTH = 16000;
+    static final int HEIGHT = 7500;
     private int entityId;
     private String entityType;
     private int x;
@@ -312,8 +325,14 @@ class Wizard extends Entity {
                 Snaffle friendlySnaffle = getBestFriendlySnaffle(snaffles, teamID);
                 int minHorMovespd = 25;
                 int minVertMovespd = 10;
-                if (friendlySnaffle != null && this.magic >= 10 && ((friendlySnaffle.getFutureY() >= 1600 && friendlySnaffle.getFutureY() <= 5500 && friendlySnaffle.getVx() > minHorMovespd && friendlySnaffle.getVy() > minVertMovespd) &&
-                        (teamID == 0 && friendlySnaffle.getFutureX() < 500) || (teamID == 1 && friendlySnaffle.getFutureX() >= 15500))) {
+                if (friendlySnaffle != null
+                        && this.magic >= 10
+                        && ((friendlySnaffle.getFutureY() >= 1600
+                            && friendlySnaffle.getFutureY() <= 5500
+                            && Math.abs(friendlySnaffle.getVx()) > minHorMovespd
+                            && Math.abs(friendlySnaffle.getVy()) > minVertMovespd)
+                        && (teamID == 0 && friendlySnaffle.getFutureX() < 500)
+                            || (teamID == 1 && friendlySnaffle.getFutureX() >= 15500))) {
                     System.out.println("PETRIFICUS " + friendlySnaffle.getEntityId());
                 }
                 else {
@@ -326,7 +345,16 @@ class Wizard extends Entity {
                         /* Third Option: If there is a snaffle between the wizard and the wizard's goal, cast ACCIO on it. */
                         int distanceBetweenWizardAndTarget = distanceBetweenTwoEntities(this, target);
                         System.err.println("distanceBetweenWizardAndTarget: " + distanceBetweenWizardAndTarget);
-                        if (this.magic >= 15 && (distanceBetweenWizardAndTarget >= 1500 && distanceBetweenWizardAndTarget <= 6000) && ((teamID == 0 && target.getFutureX() < this.getFutureX()) || (teamID == 1 && target.getFutureX() > this.getFutureX()))) {
+                        if (this.magic >= 35
+                                && (distanceBetweenWizardAndTarget >= 1500 && distanceBetweenWizardAndTarget <= 6000)
+                                && ((teamID == 0 && target.getFutureX() < this.getFutureX())
+                                    || (teamID == 1 && target.getFutureX() > this.getFutureX()))
+                            || this.magic >= 15
+                                /* If the snaffle isn't moving much, and it is in our goalbox we cast ACCIO on it */
+                                && (target.getFutureY() >= 1600 && target.getFutureY() <= 5500)
+                                && ((teamID == 0 && target.getFutureX() < 500) || (teamID == 1 && target.getFutureX() >= 15500))
+                                && Math.abs(target.getVx()) < minHorMovespd) { // Of course the velocity coords could be negative, so get the absolute val of them
+
                             this.magic -= 15;
                             System.out.println("ACCIO " + target.getEntityId());
                         } else {
@@ -399,21 +427,20 @@ class Wizard extends Entity {
         }
     }
 
+
     /* Return the snaffle that is between the wizard and the goal */
     public Snaffle getSnaffleInlineWithGoal(int goalX, int goalY, ArrayList<Snaffle> snaffles) {
         int teamID = this.getTeamID();
         int throwerX = this.getX();
         int throwerY = this.getY();
-        int postOne = 2300;
-        int postTwo = 5000;
         double tolerance = 0.01;
-        for (Snaffle enemy : snaffles) {
-            int enemyX = enemy.getFutureX();
-            int enemyY = enemy.getFutureY();
+        for (Snaffle snaffle : snaffles) {
+            int snaffleX = snaffle.getFutureX();
+            int snaffleY = snaffle.getFutureY();
 
             //int snaffleRadius = 75;
-            /* Only bother checking distances if it's possible that the enemy is between the thrower and the goal */
-//            if (((teamID == 0 && enemyX <= goalX && enemyX > throwerX) || (teamID == 1 && enemyX < throwerX && enemyX >= goalX)) && enemyY >= postOne && enemyY <= postTwo) {
+//            /* Only bother checking distances if it's possible that the enemy is between the thrower and the goal */
+//            if (((teamID == 0 && enemyX <= goalX && enemyX > throwerX) || (teamID == 1 && enemyX < throwerX && enemyX >= goalX)) && enemyY >= GOALPOSTONEy && enemyY <= GOALPOSTTWOy) {
 //                int distanceEnemyAndGoal = getDistanceBetweenTwoPoints(enemyX, enemyY, goalX, goalY);
 //                int distanceThrowerAndEnemy = getDistanceBetweenTwoPoints(throwerX, throwerY, enemyX, enemyY);
 //                int distanceThrowerAndGoal = getDistanceBetweenTwoPoints(throwerX, throwerY, goalX, goalY);
@@ -424,16 +451,17 @@ class Wizard extends Entity {
 //            }
             int wizX = this.getFutureX();
             int wizY = this.getFutureY();
-            if (enemyX == wizX)
+            if (snaffleX == wizX)
                 continue;
-            if (enemyY == wizY)
-                return enemy;
-            if (((teamID == 0 && enemyX <= goalX && enemyX > throwerX) || (teamID == 1 && enemyX < throwerX && enemyX >= goalX))) {
-                double slope = (double) (enemyY - wizY) / (enemyX - wizX);
-                double b = wizY - (slope * wizX);
-                double y = (slope * goalX) + b;
-                if (y >= postOne && y <= postTwo)
-                    return enemy;
+            if (snaffleY == wizY)
+                return snaffle;
+            if (((teamID == 0 && snaffleX <= goalX && snaffleX > throwerX) || (teamID == 1 && snaffleX < throwerX && snaffleX >= goalX))) {
+                double slope = (double) (snaffleY - wizY) / (snaffleX - wizX);
+                double yIntercept = wizY - (slope * wizX);
+                double y = (slope * goalX) + yIntercept;
+                /* If the line lands between goalposts it is a straight shot to the goal */
+                if (y >= GOALPOSTONEy && y <= GOALPOSTTWOy)
+                    return snaffle;
             }
         }
         return null;
@@ -505,7 +533,12 @@ class Wizard extends Entity {
             }
         }
 
-        return new int[]{goalX, goalY};
+        //int defaultX = teamID == 0 ? this.getFutureX() + 2000 : this.getFutureX() - 2000;
+        //int defaultY = this.getFutureY() < HEIGHT / 2 ? 0 : HEIGHT;
+        int defaultX = getTeamID() == 0 ? 16000 : 0;
+        int defaultY = 3750;
+
+        return new int[]{defaultX, defaultY};
     }
 
     public void makeShot(int x, int y) {
