@@ -11,7 +11,7 @@ Each player controls 2 wizards. To score a point, a Snaffle (a mix between a Sni
 
 ### Ranking
 My bot ranked into Gold league which is the second highest league.  
-The leagues go as follows: Wood 2 -> Wood 1 -> Bronze -> Silver -> Gold -> Legend
+The leagues go as follows: Wood 2 -> Wood 1 -> Bronze -> Silver -> Gold -> Legend  
 I made it to gold with the following strategy:
  * Flipendo any snaffles in a straight line to the goal.
  * Accio snaffles that are between my goal and my wizard.
